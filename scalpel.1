@@ -1,0 +1,173 @@
+.TH SCALPEL "1" "v1.60 - December 2006" "A Fast Header/Footer-based File Carver" "A Fast Header/Footer-based File Carver" 
+
+.SH NAME
+scalpel \- Recover files using a header/footer database
+
+.SH SYNOPSIS
+.B scalpel
+[\fB-b\fR]
+[\fB-c\fR <file>]
+[\fB-d\fR]
+[\fB-h\fR]
+[\fB-i\fR <file>]
+[\fB-m\fR <blocksize>]
+[\fB-n\fR]
+[\fB-o\fR <dir>] 
+[\fB-O\fR]
+[\fB-p\fR]
+[\fB-r\fR]
+[\fB-s\fR <num>]
+[\fB-t\fR]
+[\fB-u\fR]
+[\fB-V\fR]
+[\fB-v\fR]
+[\fIFILES\fR]...
+
+.SH DESCRIPTION
+.PP
+Recover files from a disk image or raw block device based on headers 
+and footers specified by the user.
+
+.TP
+\fB\-b\fR
+Carve files even if defined footers aren't discovered within
+maximum carve size for file type [foremost 0.69 compat mode]
+
+.TP
+\fB-c\fR \fIfile\fR
+Chooses which configuration file to use. If this option is omitted,
+then "scalpel.conf" in the current directory is used. The format for
+the configuration file is described in the default configuration
+file "scalpel.conf".  See the \fICONFIGURATION FILE\fR
+section below for more information.
+
+.TP
+\fB\-d\fR
+Generate header/footer database; will bypass certain optimizations
+and discover all footers, so performance suffers.  Doesn't affect
+the set of files carved.  **EXPERIMENTAL**
+
+.TP
+\fB\-m\fR
+Generate/update carve coverage blockmap file.  The first 32bit
+unsigned int in the file identifies the block size. Thereafter
+each 32bit unsigned int entry in the blockmap file corresponds
+to one block in the image file.  Each entry counts how many
+carved files contain this block. Requires more memory and
+disk.  **EXPERIMENTAL**
+
+.TP
+\fB\-h\fR
+Show a help screen and exit.
+
+.TP
+\fB\-i\fR \fIfile\fR
+\fIfile\fR is used as a list of input files to examine. Each
+line in the specified file should contain a single filename.
+
+.TP
+\fB-o\fR \fIdirectory\fR
+Recovered files are written to the directory
+\fIdirectory\fR.   Scalpel requires that this directory
+be either empty or not exist.  The directory will be created
+if necessary.
+
+.TP
+\fB\-O\fR
+Don't organize carved files by type. Default is to organize carved files
+into subdirectories to make previewing of large numbers of carved
+files easier.
+
+.TP
+\fB\-p\fR
+Perform image file preview; audit log indicates which files
+would have been carved, but no files are actually carved.
+
+.TP
+\fB\-q\fR \fIclustersize\fR
+Carve only when header is cluster-aligned.
+
+.TP
+\fB\-r\fR
+Find only first of overlapping headers/footers [foremost 0.69 compat mode]
+
+.TP
+\fB-s\fR \fInumber\fR
+Skips \fInumber\fR bytes in each input file before beginning the search
+for file headers and footers.
+
+.TP
+\fB\-t\fR
+Set directory for coverage blockmap.  **EXPERIMENTAL**
+
+.TP
+\fB\-u\fR
+Use carve coverage blockmap when carving.  Carve only sections
+of the image whose entries in the blockmap are 0.  These areas
+are treated as contiguous regions.  **EXPERIMENTAL**
+
+.TP
+\fB\-V\fR
+Show copyright information and exit.
+
+.TP
+\fB\-v\fR
+Enables verbose mode. This causes copious amounts of debugging information
+to be output.
+
+.PP
+
+.SH CONFIGURATION FILE
+The configuration file is used to control the types of files Scalpel
+will attempt to carve.  A sample configuration file, "scalpel.conf", is included with
+this distribution. For each file type, the configuration file describes
+the file's extension, whether the header and footer are case sensitive,
+the maximum file size, and the header and footer for the file. The footer
+field is optional, but the header, size, case sensitivity, and extension fields
+are required. 
+
+Important note: The default configuration file has all supported file
+patterns commented out--you must edit this before before running
+Scalpel.
+
+Any line in the configuration file that begins with a pound sign is 
+considered a comment and ignored. 
+
+Headers and footers are decoded before use. To specify a value in
+hexadecimal use \\x[0-f][0-f], and for octal use \\[1-9][1-9][1-9].  Spaces
+can be represented by \\s. Example: "\\x4F\\123\\I\\sCCI" decodes to "OSI CCI".
+
+To match any single character (aka a wildcard) use a '?'. If you need to
+search for the '?' character, you will need to change the 'wildcard' line
+*and* every occurrence of the old wildcard character in the configuration
+file, including those appearing in hex and octal values. '?' is equal to \\x3f and
+\\063.
+
+.SH AUTHORS
+Written by Golden G. Richard III.  The first version of Scalpel was based
+on foremost 0.69, which was written by Special Agent Kris Kendall and 
+Special Agent Jesse Kornblum of the United States Air Force 
+Office of Special Investigations.
+
+.SH BUGS AND LIMITATIONS
+It is currently not possible to carve physical block devices directly using
+the Windows version of Scalpel.  This is a limitation that will be removed in 
+a future release of Scalpel.
+
+.SH "REPORTING BUGS"
+When submitting a bug report, please include a description
+of the problem, how you found it, and your contact information.
+.PP
+Send bug reports to:
+.br
+goldenrichard@gmail.com
+.PP
+.SH COPYRIGHT
+.PP
+This is free software.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+.SH "SEE ALSO"
+More information on Scalpel appears in the README file, distributed
+with the Scalpel source code.
+.PP
