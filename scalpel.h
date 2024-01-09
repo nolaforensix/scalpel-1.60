@@ -173,13 +173,13 @@ void setProgramName(char *s);
 // GLOBALS
 
 // signal has been caught by signal handler
-int signal_caught; 
+extern int signal_caught; 
 
 // current wildcard character
-char wildcard;
+extern char wildcard;
 
 // width of tty, for progress bar
-int ttywidth;
+extern int ttywidth;
 
 extern char *__progname;
 extern int  errno;
