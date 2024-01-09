@@ -12,6 +12,13 @@ Scalpel 1.60 and 2.02.  On the other hand, if you are developing
 patterns to recover esoteric file types, you may find that Scalpel is
 still useful.
 
+There *are* some changes in this release, compared to the 1.60 release
+that's been in the wild for roughly the last 15 years.  Some minor
+memory leaks that went unnoticed until very recently have been
+corrected, mostly in code that was imported from other open source
+projects when Scalpel was first developed.  Thanks to Karley
+Waguespack for assisting with tracking these down.
+
 scalpel3 is now under development and supports not only
 header/footer-based file carving, but also recover of fragmented
 files.  A repo for scalpel3 will appear when it's ready.
@@ -23,7 +30,6 @@ Cheers,
 Original documentation in README follows.
 
 -------------------------------------------------------------------------
-
 
 Scalpel is a complete rewrite of the Foremost 0.69 file carver.  This
 version of Scalpel reads Foremost 0.69 configuration files--see the
