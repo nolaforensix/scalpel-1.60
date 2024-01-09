@@ -103,10 +103,7 @@ int getopt(int argc, char *const argv[], const char *optstring);
 #endif
 #endif    /* ifdef __WIN32 */
 
-#ifdef __GLIBC__
-char *__progname;
-#else
-char *__progname;
+#ifndef __GLIBC__
 void setProgramName(char *s);
 #endif  /* ifdef __GLIBC__ */
 
