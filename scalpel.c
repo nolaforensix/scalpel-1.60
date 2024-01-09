@@ -32,6 +32,12 @@
 
 #include "scalpel.h"
 
+// GLOBALS
+int signal_caught; 
+char wildcard;
+int ttywidth;
+char *__progname;
+
 void usage() {
   
   printf("Carves files from a disk image based on file headers and footers.\n");
