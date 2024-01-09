@@ -1,5 +1,5 @@
 CC = gcc
-CC_OPTS = -Wall -O2 
+CC_OPTS = -Wall -g -O0 -fsanitize=address
 GOAL = scalpel
 
 CC += $(CC_OPTS) 

@@ -70,7 +70,7 @@ int outputDirectoryOK(char *dir) {
     
     // verify directory is empty--there should be only two entries,
     // "." and ".." 
-    i=0;
+    i = 0;
     while((entry = readdir(temp))) {
       if (i>1) {
 	fprintf(stderr, NONEMPTYDIR_ERROR_MSG);

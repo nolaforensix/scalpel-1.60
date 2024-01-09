@@ -143,7 +143,7 @@ int extractSearchSpecData(struct SearchSpecLine *s,char **tokenarray) {
 
   s->beginlength = translate(tokenarray[3]);
   memcpy(s->begin,tokenarray[3],s->beginlength);
-  s->endlength   = translate(tokenarray[4]);
+  s->endlength = translate(tokenarray[4]);
   memcpy(s->end,tokenarray[4],s->endlength);  
  
   init_bm_table(s->begin,s->begin_bm_table,s->beginlength, 
@@ -154,17 +154,16 @@ int extractSearchSpecData(struct SearchSpecLine *s,char **tokenarray) {
 }
 
 
-
 int processSearchSpecLine(struct scalpelState *state, char *buffer, 
 			  int lineNumber) {
   
   char *buf = buffer;
   char *token;
   char **tokenarray = (char **) malloc(6*sizeof(char[MAX_STRING_LENGTH+1]));
-  int i = 0, err=0, len = strlen(buffer);
+  int i = 0, err = 0, len = strlen(buffer);
 
-  // murder CTRL-M (0x0d) characters
-  if (buffer[len-2] == 0x0d && buffer[len-1] == 0x0a) {
+  // murder CTRL-M (0x0d) characters that terminate a line
+  if (len >= 2 && buffer[len-2] == 0x0d && buffer[len-1] == 0x0a) {  
     buffer[len-2] = buffer[len-1];
     buffer[len-1] = buffer[len];
   }
@@ -242,7 +241,7 @@ int processSearchSpecLine(struct scalpelState *state, char *buffer,
 // process configuration file
 int readSearchSpecFile(struct scalpelState *state) {
 
-  int lineNumber=0, status;
+  int lineNumber = 0, status;
   FILE *f;
   
   char *buffer = malloc((NUM_SEARCH_SPEC_ELEMENTS * MAX_STRING_LENGTH + 1) * sizeof(char));
@@ -333,7 +332,7 @@ void initializeState(char **argv, struct scalpelState *state) {
   // type.
   sss = (MAX_FILE_TYPES+1)*sizeof(struct SearchSpecLine);
   state->SearchSpec = (struct SearchSpecLine*) malloc(sss);
-  state->specLines    = 0;
+  state->specLines = 0;
 
   // GGRIII: initialize header/footer offset data, carved file count,
   // et al.  The header/footer database is re-initialized in "dig.c"
@@ -342,43 +341,43 @@ void initializeState(char **argv, struct scalpelState *state) {
   // will be reallocated as needed.
 
   for (i=0; i < MAX_FILE_TYPES; i++) {
-    state->SearchSpec[i].offsets.headers=0;
-    state->SearchSpec[i].offsets.footers=0;
-    state->SearchSpec[i].offsets.numheaders=0;
-    state->SearchSpec[i].offsets.numfooters=0;
-    state->SearchSpec[i].offsets.headerstorage=0;
-    state->SearchSpec[i].offsets.footerstorage=0;
-    state->SearchSpec[i].numfilestocarve=0;
-    state->SearchSpec[i].organizeDirNum=0;
+    state->SearchSpec[i].offsets.headers = 0;
+    state->SearchSpec[i].offsets.footers = 0;
+    state->SearchSpec[i].offsets.numheaders = 0;
+    state->SearchSpec[i].offsets.numfooters = 0;
+    state->SearchSpec[i].offsets.headerstorage = 0;
+    state->SearchSpec[i].offsets.footerstorage = 0;
+    state->SearchSpec[i].numfilestocarve = 0;
+    state->SearchSpec[i].organizeDirNum = 0;
   }
 
   state->fileswritten = 0;
-  state->skip         = 0;
-  state->organizeMaxFilesPerSub=MAX_FILES_PER_SUBDIRECTORY;
-  state->modeVerbose      = FALSE;
-  state->modeNoSuffix     = FALSE;
+  state->skip = 0;
+  state->organizeMaxFilesPerSub = MAX_FILES_PER_SUBDIRECTORY;
+  state->modeVerbose = FALSE;
+  state->modeNoSuffix = FALSE;
   state->useInputFileList = FALSE;
-  state->carveWithMissingFooters=FALSE;
-  state->noSearchOverlap=FALSE;
-  state->generateHeaderFooterDatabase=FALSE;
-  state->updateCoverageBlockmap=FALSE;
-  state->useCoverageBlockmap=FALSE;
-  state->blockAlignedOnly=FALSE; 
-  state->organizeSubdirectories=TRUE;
-  state->previewMode=FALSE;
-  state->ignoreEmbedded=FALSE;
-  state->auditFile        = NULL;
+  state->carveWithMissingFooters = FALSE;
+  state->noSearchOverlap = FALSE;
+  state->generateHeaderFooterDatabase = FALSE;
+  state->updateCoverageBlockmap = FALSE;
+  state->useCoverageBlockmap = FALSE;
+  state->blockAlignedOnly = FALSE; 
+  state->organizeSubdirectories = TRUE;
+  state->previewMode = FALSE;
+  state->ignoreEmbedded = FALSE;
+  state->auditFile = NULL;
 
   // default values for output directory, config file, wildcard character,
   // coverage blockmap directory
   strncpy(state->outputdirectory,SCALPEL_DEFAULT_OUTPUT_DIR,
-	  strlen(SCALPEL_DEFAULT_OUTPUT_DIR));
+	  MAX_STRING_LENGTH);
   strncpy(state->conffile,SCALPEL_DEFAULT_CONFIG_FILE,
 	  MAX_STRING_LENGTH);
   state->coveragedirectory = state->outputdirectory;
   wildcard = SCALPEL_DEFAULT_WILDCARD;
   signal_caught = 0;
-  state->invocation[0]=0;
+  state->invocation[0] = 0;
   
   // copy the invocation string into the state
   do {
@@ -421,7 +420,7 @@ void processCommandLineArgs(int argc, char **argv,
       break;
 
     case 'd':
-      state->generateHeaderFooterDatabase=TRUE;
+      state->generateHeaderFooterDatabase = TRUE;
       break;
 
       // -e support is currently a work-in-progress and will be enabled in a future release
@@ -430,7 +429,7 @@ void processCommandLineArgs(int argc, char **argv,
       //      break;
 
     case 'm':
-      state->updateCoverageBlockmap=TRUE;
+      state->updateCoverageBlockmap = TRUE;
       state->coverageblocksize=strtoul(optarg,NULL,10);
       if (state->coverageblocksize <= 0) {
 	fprintf(stderr, 
@@ -444,20 +443,20 @@ void processCommandLineArgs(int argc, char **argv,
       break;
 
     case 't':
-      state->coveragedirectory  = (char *) malloc(MAX_STRING_LENGTH * sizeof(char));
+      state->coveragedirectory = (char *) malloc(MAX_STRING_LENGTH * sizeof(char));
       strncpy(state->coveragedirectory,optarg,MAX_STRING_LENGTH);
       break;
 
     case 'O':
-      state->organizeSubdirectories=FALSE;
+      state->organizeSubdirectories = FALSE;
       break;
 
     case 'p':
-      state->previewMode=TRUE;
+      state->previewMode = TRUE;
       break;
 
     case 'b':
-      state->carveWithMissingFooters=TRUE;
+      state->carveWithMissingFooters = TRUE;
       break;
       
     case 'i':
@@ -471,8 +470,8 @@ void processCommandLineArgs(int argc, char **argv,
       break;
 
     case 'q':
-      state->blockAlignedOnly=TRUE;
-      state->alignedblocksize=strtoul(optarg,NULL,10);
+      state->blockAlignedOnly = TRUE;
+      state->alignedblocksize = strtoul(optarg,NULL,10);
       if (state->alignedblocksize <= 0) {
 	fprintf(stderr, 
 		"\nERROR: Invalid blocksize for -q command line option.\n");
@@ -481,15 +480,15 @@ void processCommandLineArgs(int argc, char **argv,
       break;
 
     case 'r':
-      state->noSearchOverlap=TRUE;
+      state->noSearchOverlap = TRUE;
       break;
 
     case 'u':
-      state->useCoverageBlockmap=TRUE;
+      state->useCoverageBlockmap = TRUE;
       break;
 
     case 'v':
-      state->modeVerbose=TRUE;
+      state->modeVerbose = TRUE;
       break;
 
     default:
@@ -526,12 +525,12 @@ void digAllFiles(int argc, char **argv, struct scalpelState *state) {
     listoffiles = fopen(state->inputFileList,"r");
     if (listoffiles == NULL) {
       fprintf(stderr, "Couldn't open file: %s -- %s\n", 
-	      (*(state->inputFileList)=='\0')?"<blank>":state->inputFileList,
+	      (*(state->inputFileList) == '\0')?"<blank>":state->inputFileList,
 	      strerror(errno));
       closeFile(state->auditFile);
       exit(-1);
     }
-    j=0;
+    j = 0;
     do {
       j++;
       
@@ -592,7 +591,7 @@ void digAllFiles(int argc, char **argv, struct scalpelState *state) {
 
 int main(int argc, char **argv) {
 
-  time_t starttime=time(0);
+  time_t starttime = time(0);
   struct scalpelState state;
 
   if (ldiv(SIZE_OF_BUFFER,SCALPEL_BLOCK_SIZE).rem != 0) {

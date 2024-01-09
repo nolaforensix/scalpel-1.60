@@ -61,7 +61,7 @@ static int bm_digBuffer(struct scalpelState *state, FILE *infile,
 static void printhex(char *s, int len) {
 
   int i;
-  for (i=0; i < len; i++) {
+  for (i = 0; i < len; i++) {
     printf("\\x%.2x", (unsigned char)s[i]);
   }
 }
@@ -195,8 +195,7 @@ static void setupAuditFile(struct scalpelState* state) {
   char imageFile[MAX_STRING_LENGTH];  
 
   realpath(state->imagefile,imageFile);
-  
-  scalpelLog(state,"\nOpening target \"%s\"\n\n", imageFile);
+  scalpelLog(state,"\nOpening target \"%s\"\n\n", imageFile); 
 
 #ifdef __WIN32
   if (state->skip) {
@@ -237,7 +236,7 @@ static int bm_digBuffer(struct scalpelState *state, FILE *infile,
   struct SearchSpecLine *currentneedle;
     
   // for each file type, find all headers and some (or all) footers
-  for (needlenum=0; 
+  for (needlenum = 0; 
        state->SearchSpec[needlenum].suffix != NULL; 
        needlenum++) {
     
@@ -432,9 +431,9 @@ int digImageFile(struct scalpelState* state) {
   FILE *infile;
   unsigned long long filesize = 0, bytesread = 0, 
     fileposition = 0, filebegin = 0, beginreadpos = 0;
-  long err=0;
+  long err = 0;
   int status, displayUnits = UNITS_BYTES;
-  int success=0;
+  int success = 0;
   int longestneedle;
   setupAuditFile(state);
   
@@ -509,11 +508,11 @@ int digImageFile(struct scalpelState* state) {
   // be extracted.
 
   fprintf(stdout, "Image file pass 1/2.\n");
-  success=1;
+  success = 1;
   while ((bytesread = 
 	  fread_use_coverage_map(state, readbuffer,
 				 1,
-				 SIZE_OF_BUFFER, infile)) > longestneedle-1 || success==0) {
+				 SIZE_OF_BUFFER, infile)) > longestneedle-1 || success == 0) {
 
     if (state->modeVerbose) {
 #ifdef __WIN32
@@ -526,7 +525,7 @@ int digImageFile(struct scalpelState* state) {
     if ((err = ferror(infile))) {
 	return SCALPEL_ERROR_FILE_READ;      
     }
-    success=1;
+    success = 1;
     
     // progress report needs a fileposition that doesn't depend on coverage map
     fileposition = ftello(infile);
@@ -580,14 +579,14 @@ int carveImageFile(struct scalpelState* state) {
   int needlenum;
   unsigned long long filesize = 0, bytesread = 0, 
     fileposition = 0, filebegin = 0; 
-  long err=0;
+  long err = 0;
   int displayUnits = UNITS_BYTES;
-  int success=0;
+  int success = 0;
   unsigned long long i,j;
   int halt;
   char chopped;                     // file chopped because it exceeds
                                     // max carve size for type?
-  int CURRENTFILESOPEN=0;           // number of files open (during carve)
+  int CURRENTFILESOPEN = 0;         // number of files open (during carve)
 
   // index of header and footer within image file, in SIZE_OF_BUFFER
   // blocks
@@ -642,7 +641,7 @@ int carveImageFile(struct scalpelState* state) {
 
   fprintf(stdout, "Allocating work queues...\n");
 
-  for (i=0; i < 2 + (filesize / SIZE_OF_BUFFER); i++) {
+  for (i = 0; i < 2 + (filesize / SIZE_OF_BUFFER); i++) {
     init_queue(&carvelists[i],
 	       sizeof(struct CarveInfo *),
 	       TRUE, 0);
@@ -651,14 +650,14 @@ int carveImageFile(struct scalpelState* state) {
 
   // build carvelists before 2nd pass over image file
   
-  for (needlenum=0; state->SearchSpec[needlenum].suffix != NULL; needlenum++) {
+  for (needlenum = 0; state->SearchSpec[needlenum].suffix != NULL; needlenum++) {
 
     currentneedle = &(state->SearchSpec[needlenum]);
 
     // handle each discovered header independently
 
     prevstopindex = 0;
-    for (i=0; i < currentneedle->offsets.numheaders; i++) {
+    for (i = 0; i < currentneedle->offsets.numheaders; i++) {
       start = currentneedle->offsets.headers[i];
 
       // block aligned test for "-q"
@@ -667,8 +666,8 @@ int carveImageFile(struct scalpelState* state) {
 	continue;
       }
 
-      stop=0;
-      chopped=0;
+      stop = 0;
+      chopped = 0;
     
       // case 1: no footer defined for this file type
       if (! currentneedle->endlength) {
@@ -679,7 +678,7 @@ int carveImageFile(struct scalpelState* state) {
 	stop = start + currentneedle->length - 1;
 	// these are always considered chopped, because we don't really
 	// know the actual size
-	chopped=1;
+	chopped = 1;
       }
       else if (currentneedle->searchtype == SEARCHTYPE_FORWARD ||
 	       currentneedle->searchtype == SEARCHTYPE_FORWARD_NEXT) {
@@ -692,19 +691,19 @@ int carveImageFile(struct scalpelState* state) {
 	// FORWARD, if no footer is found then no carving will be
 	// performed unless -b was specified on the command line.
 
-	halt=0;
+	halt = 0;
 	
 	//	if (state->ignoreEmbedded) {
 	//	  adjustForEmbedding(currentneedle, i, &prevstopindex);
 	//	}
 
-	for (j=prevstopindex; j < currentneedle->offsets.numfooters && 
+	for (j = prevstopindex; j < currentneedle->offsets.numfooters && 
 	       ! halt; j++) {
 	  if (currentneedle->offsets.footers[j] <= start) {
-	    prevstopindex=j;
+	    prevstopindex = j;
 	  }
 	  else {
-	    halt=1;
+	    halt = 1;
 	    stop = currentneedle->offsets.footers[j];
 
 	    if (currentneedle->searchtype == SEARCHTYPE_FORWARD) {
@@ -726,10 +725,10 @@ int carveImageFile(struct scalpelState* state) {
 		// carve nothing and move on.
 		if (state->carveWithMissingFooters) {
 		  stop = start + currentneedle->length - 1;
-		  chopped=1;
+		  chopped = 1;
 		}
 		else {
-		  stop=0;
+		  stop = 0;
 		}
 	      }
 	      else {
@@ -737,7 +736,7 @@ int carveImageFile(struct scalpelState* state) {
 		// max carve size for this file type, so use max carve
 		// size as stop
 		stop = start + currentneedle->length - 1;
-		chopped=1;
+		chopped = 1;
 	      }
 	    }
 	  }
@@ -760,11 +759,11 @@ int carveImageFile(struct scalpelState* state) {
 	// in prevstopindex, as the next headers will be even deeper
 	// into the image file.  Footer is included in carved file for
 	// this type of carve.
-	halt=0;
-	for (j=prevstopindex; j < currentneedle->offsets.numfooters && 
+	halt = 0;
+	for (j = prevstopindex; j < currentneedle->offsets.numfooters && 
 	       ! halt; j++) {
 	  if (currentneedle->offsets.footers[j] <= start) {
-	    prevstopindex=j;
+	    prevstopindex = j;
 	  }
 	  else if (currentneedle->offsets.footers[j] - start <= 
 		   currentneedle->length) {
@@ -772,7 +771,7 @@ int carveImageFile(struct scalpelState* state) {
 	      + currentneedle->endlength - 1;
 	  }
 	  else {
-	    halt=1;
+	    halt = 1;
 	  }
 	}
       }
@@ -875,7 +874,7 @@ int carveImageFile(struct scalpelState* state) {
 	  add_to_queue(&carvelists[footerblockindex], &carveinfo, STOPCARVE);
 	  // .. and to all lists in between (these will result in a full
 	  // SIZE_OF_BUFFER bytes being carved into the file).  
-	  for (j=headerblockindex+1; j < footerblockindex; j++) {
+	  for (j = headerblockindex+1; j < footerblockindex; j++) {
 	    add_to_queue(&carvelists[j], &carveinfo, CONTINUECARVE);
 	  }
 	}
@@ -884,7 +883,7 @@ int carveImageFile(struct scalpelState* state) {
   }
   
   fprintf(stdout, "Carve lists built.  Workload:\n");
-  for (needlenum=0; state->SearchSpec[needlenum].suffix != NULL; needlenum++) {
+  for (needlenum = 0; state->SearchSpec[needlenum].suffix != NULL; needlenum++) {
     currentneedle = &(state->SearchSpec[needlenum]);
     fprintf(stdout, "%s with header \"",
 	    currentneedle->suffix);
@@ -915,10 +914,10 @@ int carveImageFile(struct scalpelState* state) {
   // now read image file in SIZE_OF_BUFFER-sized windows, writing
   // carved files to output directory
 
-  success=1;
+  success = 1;
   while (success) {
 
-    unsigned long long biglseek=0L;
+    unsigned long long biglseek = 0L;
     // goal: skip reading buffers for which there is no work to do by using one big
     // seek
     fileposition = ftello_use_coverage_map(state, infile);
@@ -952,7 +951,7 @@ int carveImageFile(struct scalpelState* state) {
       }
       else if (bytesread == 0) {   
 	// no error, but image file exhausted
-	success=0;
+	success = 0;
 	continue;
       }
     }
@@ -971,12 +970,12 @@ int carveImageFile(struct scalpelState* state) {
       }
       else if (bytesread == 0) {   
 	// no error, but image file exhausted
-	success=0;
+	success = 0;
 	continue;
       }
     }
 
-    success=1;
+    success = 1;
 
     // progress report needs real file position
     fileposition = ftello(infile);
@@ -998,7 +997,7 @@ int carveImageFile(struct scalpelState* state) {
     while (! end_of_queue(&carvelists[(fileposition-bytesread) / SIZE_OF_BUFFER])) {
       struct CarveInfo *carve;
       int operation;
-      unsigned long long bytestowrite=0, byteswritten=0, offset=0;
+      unsigned long long bytestowrite = 0, byteswritten = 0, offset = 0;
 
       peek_at_current(&carvelists[(fileposition-bytesread) / SIZE_OF_BUFFER], 
 		      &carve);
@@ -1034,11 +1033,11 @@ int carveImageFile(struct scalpelState* state) {
       // write some portion of current readbuffer
       switch (operation) {
       case CONTINUECARVE:
-	offset=0;
-	bytestowrite=SIZE_OF_BUFFER;
+	offset = 0;
+	bytestowrite = SIZE_OF_BUFFER;
 	break;
       case STARTSTOPCARVE:
-	offset=carve->start - (fileposition-bytesread);
+	offset = carve->start - (fileposition-bytesread);
 	bytestowrite = carve->stop - carve->start + 1;
 	break;
       case STARTCARVE:
@@ -1075,7 +1074,7 @@ int carveImageFile(struct scalpelState* state) {
       if (operation == STARTSTOPCARVE || 
 	  operation == STOPCARVE || 
 	  CURRENTFILESOPEN > MAX_FILES_TO_OPEN) {
-	err=0;
+	err = 0;
 	if (! state->previewMode) {
 	  if (state->modeVerbose) {
 	    fprintf(stdout, "CLOSING %s\n", carve->filename);
@@ -1092,7 +1091,7 @@ int carveImageFile(struct scalpelState* state) {
 	}
 	else {
 	  CURRENTFILESOPEN--;
-	  carve->fp=0;
+	  carve->fp = 0;
 
 	  // release filename buffer if it won't be needed again.  Don't release it
 	  // if the file was closed only because a large number of files are currently
@@ -1125,7 +1124,7 @@ int carveImageFile(struct scalpelState* state) {
 
   // tear down header/footer databases
 
-  for (needlenum=0; 
+  for (needlenum = 0; 
        state->SearchSpec[needlenum].suffix != NULL; 
        needlenum++) {
     currentneedle = &(state->SearchSpec[needlenum]);
@@ -1135,12 +1134,12 @@ int carveImageFile(struct scalpelState* state) {
     if (currentneedle->offsets.footers) {
       free(currentneedle->offsets.footers);
     }
-    currentneedle->offsets.headers=0;
-    currentneedle->offsets.footers=0;
-    currentneedle->offsets.numheaders=0;
-    currentneedle->offsets.numfooters=0;
-    currentneedle->offsets.headerstorage=0;
-    currentneedle->offsets.footerstorage=0;
+    currentneedle->offsets.headers = 0;
+    currentneedle->offsets.footers = 0;
+    currentneedle->offsets.numheaders = 0;
+    currentneedle->offsets.numfooters = 0;
+    currentneedle->offsets.headerstorage = 0;
+    currentneedle->offsets.footerstorage = 0;
   }
   
   // tear down work queues--no memory deallocation for each queue
@@ -1148,7 +1147,7 @@ int carveImageFile(struct scalpelState* state) {
   // filename was freed after the carved file was closed.
 
   // destroy queues
-  for (i=0; i < 2 + (filesize / SIZE_OF_BUFFER); i++) {
+  for (i = 0; i < 2 + (filesize / SIZE_OF_BUFFER); i++) {
     destroy_queue(&carvelists[i]);
   }
   // destroy array of queues
@@ -1220,7 +1219,7 @@ static int writeHeaderFooterDatabase(struct scalpelState *state) {
   fcntl(fileno(dbfile),F_SETFL, O_LARGEFILE);
 #endif
 
-  for (needlenum=0; 
+  for (needlenum = 0; 
        state->SearchSpec[needlenum].suffix != NULL; 
        needlenum++) {
     
@@ -1250,7 +1249,7 @@ static int writeHeaderFooterDatabase(struct scalpelState *state) {
       }
 
       // all header positions for current suffix
-      for (i=0; i < currentneedle->offsets.numheaders; i++) {
+      for (i = 0; i < currentneedle->offsets.numheaders; i++) {
 #ifdef __WIN32
 	if (fprintf(dbfile, "%I64u\n", positionUseCoverageBlockmap(state, currentneedle->offsets.headers[i])) <= 0) {
 #else
@@ -1278,7 +1277,7 @@ static int writeHeaderFooterDatabase(struct scalpelState *state) {
       }
       
       // all footer positions for current suffix
-      for (i=0; i < currentneedle->offsets.numfooters; i++) {
+      for (i = 0; i < currentneedle->offsets.numfooters; i++) {
 #ifdef __WIN32
 	if (fprintf(dbfile, "%I64u\n", positionUseCoverageBlockmap(state, currentneedle->offsets.footers[i])) <= 0) {
 #else
@@ -1324,8 +1323,8 @@ static int setupCoverageMaps(struct scalpelState *state, unsigned long long file
   unsigned int blocksize, entry;
   
 
-  state->coveragebitmap=0;
-  state->coverageblockmap=0;
+  state->coveragebitmap = 0;
+  state->coverageblockmap = 0;
   
   if (state->modeVerbose && (state->useCoverageBlockmap || state->updateCoverageBlockmap)) {
     fprintf(stdout, "Setting up coverage maps.\n");
@@ -1359,7 +1358,7 @@ static int setupCoverageMaps(struct scalpelState *state, unsigned long long file
 #endif
       
       if (state->modeVerbose) {
-	fprintf(stdout, "Reading blocksize from Coverage blockmap file.\n"); 
+	fprintf(stdout, "Reading blocksize from coverage blockmap file.\n"); 
       }
 
       // read block size and make sure it matches user-specified block size
@@ -1387,7 +1386,7 @@ static int setupCoverageMaps(struct scalpelState *state, unsigned long long file
 	return SCALPEL_GENERAL_ABORT;
       }
 
-      state->coveragenumblocks=ceil((double)filesize / (double)state->coverageblocksize);
+      state->coveragenumblocks = ceil((double)filesize / (double)state->coverageblocksize);
       if (state->modeVerbose) {
 #ifdef __WIN32
 	fprintf(stdout, "# of blocks in coverage blockmap is %I64u.\n", state->coveragenumblocks);
@@ -1407,13 +1406,13 @@ static int setupCoverageMaps(struct scalpelState *state, unsigned long long file
 	checkMemoryAllocation(state, state->coveragebitmap, __LINE__, __FILE__, "coveragebitmap");
 
 	// zap coverage bitmap 
-	for (k=0; k < state->coveragenumblocks / 8; k++) {
-	  state->coveragebitmap[k]=0;
+	for (k = 0; k < state->coveragenumblocks / 8; k++) {
+	  state->coveragebitmap[k] = 0;
 	}
 	
 	fprintf(stdout, "Reading existing coverage blockmap...this may take a while.\n");
 	
-	for (i=0; i < state->coveragenumblocks; i++) {
+	for (i = 0; i < state->coveragenumblocks; i++) {
 	  fseeko(state->coverageblockmap, (i + 1) * sizeof(unsigned int), SEEK_SET);
 	  if (fread(&entry, sizeof(unsigned int), 1, state->coverageblockmap) != 1) {
 	    fprintf(stderr,"Error reading coverage blockmap entry (blockmap truncated?): %s\n", 
@@ -1436,7 +1435,7 @@ static int setupCoverageMaps(struct scalpelState *state, unsigned long long file
       return SCALPEL_GENERAL_ABORT;
     }
     else {
-      state->coveragenumblocks=ceil((double)filesize / (double)state->coverageblocksize);
+      state->coveragenumblocks = ceil((double)filesize / (double)state->coverageblocksize);
       if (state->modeVerbose) {
 #ifdef __WIN32
 	fprintf(stdout, "# of blocks in coverage blockmap is %I64u.\n", state->coveragenumblocks);
@@ -1474,13 +1473,13 @@ static int setupCoverageMaps(struct scalpelState *state, unsigned long long file
       if (empty) {
 	// create entries in empty coverage blockmap file
 	fprintf(stdout, "Writing empty coverage blockmap...this may take a while.\n");
-	entry=0;
+	entry = 0;
 	if (fwrite(&(state->coverageblocksize), sizeof(unsigned int), 1, state->coverageblockmap) != 1) {
 	  fprintf(stderr,"Error writing initial entry in coverage blockmap file!\n");
 	  fprintf(state->auditFile, "Error writing initial entry in coverage blockmap file!\n");
 	  return SCALPEL_ERROR_FILE_WRITE;
 	}
-	for (k=0; k < state->coveragenumblocks; k++) {
+	for (k = 0; k < state->coveragenumblocks; k++) {
 	  if (fwrite(&entry, sizeof(unsigned int), 1, state->coverageblockmap) != 1) {
 	    fprintf(stderr,"Error writing to coverage blockmap file!\n");
 	    fprintf(state->auditFile, "Error writing to coverage blockmap file!\n");
@@ -1503,8 +1502,8 @@ static int setupCoverageMaps(struct scalpelState *state, unsigned long long file
 // define a carved file in the disk image.  
  static void generateFragments(struct scalpelState *state, Queue *fragments, CarveInfo *carve) {
 
-  unsigned long long curblock, neededbytes=carve->stop - carve->start + 1, bytestoskip, 
-    morebytes, totalbytes=0, curpos;
+  unsigned long long curblock, neededbytes = carve->stop - carve->start + 1, bytestoskip, 
+    morebytes, totalbytes = 0, curpos;
 
   Fragment frag;
 
@@ -1526,8 +1525,8 @@ static int setupCoverageMaps(struct scalpelState *state, unsigned long long file
     
     while (totalbytes < neededbytes && curblock < state->coveragenumblocks) {
 
-      morebytes=0;
-      bytestoskip=0;
+      morebytes = 0;
+      bytestoskip = 0;
       
       // skip covered blocks
       while (curblock < state->coveragenumblocks && 
@@ -1555,9 +1554,9 @@ static int setupCoverageMaps(struct scalpelState *state, unsigned long long file
 	morebytes = neededbytes - totalbytes;
       }
       
-      frag.start=curpos;
+      frag.start = curpos;
       curpos += morebytes;
-      frag.stop=curpos-1;
+      frag.stop = curpos-1;
       totalbytes += morebytes;
       
       add_to_queue(fragments, &frag, 0);
@@ -1577,16 +1576,16 @@ static int setupCoverageMaps(struct scalpelState *state, unsigned long long file
 static unsigned long long positionUseCoverageBlockmap(struct scalpelState *state, unsigned long long position) {
    
 
-  unsigned long long totalbytes=0, neededbytes=position,
-    morebytes, curblock=0, curpos=0, bytestoskip;
+  unsigned long long totalbytes = 0, neededbytes = position,
+    morebytes, curblock = 0, curpos = 0, bytestoskip;
    
    if (! state->useCoverageBlockmap) {
      return position;
    }
    else {
      while (totalbytes < neededbytes && curblock < state->coveragenumblocks) {
-       morebytes=0;
-       bytestoskip=0;
+       morebytes = 0;
+       bytestoskip = 0;
       
        // skip covered blocks
        while (curblock < state->coveragenumblocks && 
@@ -1667,7 +1666,7 @@ static unsigned long long positionUseCoverageBlockmap(struct scalpelState *state
 
      // update coverage blockmap, if appropriate
      if (state->updateCoverageBlockmap) {
-       for (k=frag->start / state->coverageblocksize; 
+       for (k = frag->start / state->coverageblocksize; 
 	    k <= frag->stop / state->coverageblocksize; k++) {
 	 if ((err = updateCoverageBlockmap(state, k)) != SCALPEL_OK) {
 	   destroy_queue(&fragments);
@@ -1735,18 +1734,18 @@ static unsigned long long positionUseCoverageBlockmap(struct scalpelState *state
 static int fseeko_use_coverage_map(struct scalpelState *state, FILE *fp, off64_t offset) {
 
   off64_t currentpos;
-  unsigned long long curblock, bytestoskip, bytestokeep, totalbytes=0;
+  unsigned long long curblock, bytestoskip, bytestokeep, totalbytes = 0;
   int sign;
 
   if (state->useCoverageBlockmap) {
-    currentpos=ftello(fp);
+    currentpos = ftello(fp);
     sign = (offset > 0 ? 1 : -1);
 
-     curblock= currentpos / state->coverageblocksize;
+     curblock = currentpos / state->coverageblocksize;
      
      while (totalbytes < (offset > 0 ? offset : offset * -1) && 
 	    curblock < state->coveragenumblocks && curblock >= 0) {
-       bytestoskip=0;
+       bytestoskip = 0;
 
        // covered blocks increase offset
        while (curblock < state->coveragenumblocks &&
@@ -1761,7 +1760,7 @@ static int fseeko_use_coverage_map(struct scalpelState *state, FILE *fp, off64_t
        offset += (bytestoskip * sign);
        currentpos += (bytestoskip * sign);
 
-       bytestokeep=0;
+       bytestokeep = 0;
 
        // uncovered blocks don't increase offset
        while (curblock < state->coveragenumblocks && 
@@ -1796,7 +1795,7 @@ static int fseeko_use_coverage_map(struct scalpelState *state, FILE *fp, off64_t
  
 static off64_t ftello_use_coverage_map(struct scalpelState *state, FILE *fp) {
    
-  off64_t currentpos, decrease=0;
+  off64_t currentpos, decrease = 0;
   unsigned long long endblock, k;
 
   currentpos=ftello(fp);  
@@ -1805,7 +1804,7 @@ static off64_t ftello_use_coverage_map(struct scalpelState *state, FILE *fp) {
     endblock = currentpos / state->coverageblocksize;
     
     // covered blocks don't contribute to current file position
-    for (k=0; k <= endblock; k++) {
+    for (k = 0; k <= endblock; k++) {
       if (state->coveragebitmap[k / 8] & (1 << (k % 8))) {
 	decrease += state->coverageblocksize;
       }
@@ -1836,8 +1835,8 @@ static off64_t ftello_use_coverage_map(struct scalpelState *state, FILE *fp) {
 static size_t fread_use_coverage_map(struct scalpelState *state, void *ptr, 
 			      size_t size, size_t nmemb, FILE *stream) {  
 
-  unsigned long long curblock, neededbytes=nmemb * size, bytestoskip, 
-    bytestoread, bytesread, totalbytesread=0, curpos;
+  unsigned long long curblock, neededbytes = nmemb * size, bytestoskip, 
+    bytestoread, bytesread, totalbytesread = 0, curpos;
   int shortread;
 
 
@@ -1851,12 +1850,12 @@ static size_t fread_use_coverage_map(struct scalpelState *state, void *ptr,
      }
      
      curpos = ftello(stream);
-     curblock= curpos / state->coverageblocksize;
-     shortread=0;
+     curblock = curpos / state->coverageblocksize;
+     shortread = 0;
      
      while (totalbytesread < neededbytes && curblock < state->coveragenumblocks && ! shortread) {
-       bytestoread=0;
-       bytestoskip=0;
+       bytestoread = 0;
+       bytestoskip = 0;
 
        // skip covered blocks
        while (curblock < state->coveragenumblocks && 
@@ -1904,8 +1903,8 @@ static size_t fread_use_coverage_map(struct scalpelState *state, void *ptr,
 #endif
        }
 
-       if ((bytesread=fread((char *)ptr+totalbytesread, 1, (size_t)bytestoread, stream)) < bytestoread) {
-	 shortread=1;
+       if ((bytesread = fread((char *)ptr+totalbytesread, 1, (size_t)bytestoread, stream)) < bytestoread) {
+	 shortread = 1;
        }
 
        totalbytesread += bytesread;

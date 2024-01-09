@@ -11,10 +11,10 @@
 #include "prioque.h"
 
 // global lock on entire package
-pthread_mutex_t global_lock=PTHREAD_MUTEX_INITIALIZER;  
+pthread_mutex_t global_lock = PTHREAD_MUTEX_INITIALIZER;  
 
 // for init purposes
-pthread_mutex_t initial_mutex=PTHREAD_MUTEX_INITIALIZER;   
+pthread_mutex_t initial_mutex = PTHREAD_MUTEX_INITIALIZER;   
 
 // function prototypes for internal functions
 void nolock_next_element(Queue *q);
@@ -34,7 +34,7 @@ void init_queue(Queue *q, int elementsize, int duplicates,
   q->duplicates = duplicates;
   q->compare = compare;
   nolock_rewind_queue(q);
-  q->lock=initial_mutex;
+  q->lock = initial_mutex;
 }
 
 
@@ -86,13 +86,13 @@ int element_in_queue(Queue *q, void *element) {
 
 int nolock_element_in_queue(Queue *q, void *element) {
 
-  int found=0;
+  int found = 0;
 
   if (q->queue != 0) {
     nolock_rewind_queue(q);
     while (! end_of_queue(q) && ! found) {
       if (q->compare(element, q->current->info) == 0) {
-	found=1;
+	found = 1;
       }
       else {
 	nolock_next_element(q);
@@ -110,7 +110,7 @@ int nolock_element_in_queue(Queue *q, void *element) {
 
 void nolock_add_to_queue(Queue *q, void *element, int priority) {
 
-   Queue_element new_element, ptr, prev=0;
+   Queue_element new_element, ptr, prev = 0;
 
    if (! q->queue ||   
        (q->queue && (q->duplicates || 

@@ -73,9 +73,13 @@ void scalpelLog(struct scalpelState *state, char *format, ...) {
   va_list argp;
 
   va_start(argp,format);
-  vfprintf (stderr,format,argp);
-  vfprintf (state->auditFile,format,argp);
+  vfprintf(stderr,format,argp);
   va_end(argp);
+  
+  va_start(argp,format);
+  vfprintf(state->auditFile,format,argp); 
+  va_end(argp);
+
 }
 
 // determine if two characters match, with optional case 
@@ -119,7 +123,7 @@ int memwildcardcmp(const void *s1, const void *s2,
 void init_bm_table(char *needle, size_t table[UCHAR_MAX + 1], 
 		   size_t len, int casesensitive) {
 
-  size_t i=0,j=0,currentindex=0;
+  size_t i = 0,j = 0,currentindex = 0;
   
   for (i = 0; i <= UCHAR_MAX; i++) {
     table[i] = len;
@@ -129,7 +133,7 @@ void init_bm_table(char *needle, size_t table[UCHAR_MAX + 1],
     currentindex = len-i-1; //Count from the back of string
     //No skip entry can advance us past the last wildcard in the string
     if (needle[i] == wildcard) {           
-      for (j=0; j<=UCHAR_MAX; j++) {
+      for (j=0; j<= UCHAR_MAX; j++) {
 	table[j] = currentindex; 
       }
     }	
@@ -151,7 +155,7 @@ char *bm_needleinhaystack_skipnchars(char *needle, size_t needle_len,
 				     size_t table[UCHAR_MAX + 1], 
 				     int casesensitive,
 				     int start_pos) {
-  register size_t shift=0;
+  register size_t shift = 0;
   register size_t pos = start_pos;
   char *here; 
   
@@ -193,8 +197,8 @@ char *bm_needleinhaystack(char *needle, size_t needle_len,
 // find longest header OR footer
 int findLongestNeedle(struct SearchSpecLine *SearchSpec) {
   int longest = 0;
-  int i=0;
-  for(i=0; SearchSpec[i].suffix != NULL; i++) {
+  int i = 0;
+  for(i = 0; SearchSpec[i].suffix != NULL; i++) {
     if (SearchSpec[i].beginlength > longest) {
       longest = SearchSpec[i].beginlength;
     }
@@ -211,17 +215,17 @@ int findLongestNeedle(struct SearchSpecLine *SearchSpec) {
 
 int translate(char *str) {
   char next;
-  char *rd=str,*wr=str,*bad;
+  char *rd = str,*wr = str,*bad;
   char temp[1+3+1];
   char ch;
   
-  if(!*rd) {  //If it's a null string just return
+  if (!*rd) {  //If it's a null string just return
     return 0;
   }
   
   while (*rd) {
     // Is it an escaped character?
-    if (*rd=='\\') {
+    if (*rd == '\\') {
       rd++;
       switch(*rd) {
       case '\\': rd++;*(wr++)='\\'; break;
@@ -243,12 +247,12 @@ int translate(char *str) {
 	    (70 < next && next < 97) || next > 102) 
 	  break;  //break if not a digit or a-f, A-F 
 	
-	temp[0]='0'; bad=temp;
+	temp[0] = '0'; bad = temp;
 	strncpy(temp+1,rd,3);
 	temp[4] = '\0';
 	ch=strtoul(temp,&bad,0);
-	if (*bad=='\0') {
-	  *(wr++)=ch;
+	if (*bad =='\0') {
+	  *(wr++) = ch;
 	  rd+=3;
 	} // else INVALID CHARACTER IN INPUT ('\\' followed by *rd) 
 	break;
@@ -259,7 +263,7 @@ int translate(char *str) {
     }
     // just copy un-escaped characters
     else {
-      *(wr++)=*(rd++);
+      *(wr++) = *(rd++);
     }
   }
   *wr = '\0';  // null termination
