@@ -20,8 +20,9 @@ projects when Scalpel was first developed.  Thanks to Karley
 Waguespack for assisting with tracking these down.
 
 scalpel3 is now under development and supports not only
-header/footer-based file carving, but also recover of fragmented
-files.  A repo for scalpel3 will appear when it's ready.
+header/footer-based file carving, but also much more sophisticated
+recovery options and high-performance recovery of fragmented files.  A
+public repo for scalpel3 will appear when it's ready.
 
 Cheers,
 
