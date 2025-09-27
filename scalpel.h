@@ -344,7 +344,7 @@ char *bm_needleinhaystack(char *needle, size_t needle_len,
                           size_t table[UCHAR_MAX + 1], int casesensitive);
 int translate(char *str);
 char *skipWhiteSpace(char *str);
-void setttywidth();
+void setttywidth(int sig);
 
 // prototypes for visible files.c functions
 unsigned long long measureOpenFile(FILE *f, struct scalpelState *state);
