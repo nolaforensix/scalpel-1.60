@@ -623,7 +623,7 @@ int main(int argc, char **argv) {
     exit(-1);
   }
 
-  setttywidth();
+  setttywidth(0);
 
   argv += optind;
   if (*argv != NULL || state.useInputFileList) {

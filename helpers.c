@@ -341,7 +341,7 @@ void handleError(struct scalpelState *state, int error) {
 }
 
 
-void setttywidth(){
+void setttywidth(int sig){
 #if defined (__WIN32)
   CONSOLE_SCREEN_BUFFER_INFO csbi;  
   HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
