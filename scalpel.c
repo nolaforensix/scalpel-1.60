@@ -444,7 +444,7 @@ void processCommandLineArgs(int argc, char **argv,
 
     case 't':
       state->coveragedirectory = (char *) malloc(MAX_STRING_LENGTH * sizeof(char));
-      strncpy(state->coveragedirectory,optarg,MAX_STRING_LENGTH);
+      snprintf(state->coveragedirectory,MAX_STRING_LENGTH,"%s",optarg);
       break;
 
     case 'O':

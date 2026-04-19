@@ -816,6 +816,8 @@ int carveImageFile(struct scalpelState* state) {
 
 	if (state->modeNoSuffix || currentneedle->suffix[0] == 
 	    SCALPEL_NOEXTENSION) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation"
 #ifdef __WIN32
 	  snprintf(fn,MAX_STRING_LENGTH,"%s/%08I64u",
 		   orgdir,
@@ -840,6 +842,7 @@ int carveImageFile(struct scalpelState* state) {
 		   currentneedle->suffix);
 #endif
 	}
+#pragma GCC diagnostic pop
 	state->fileswritten++;     
 	currentneedle->numfilestocarve++;
 	if (currentneedle->numfilestocarve % state->organizeMaxFilesPerSub == 0) {
