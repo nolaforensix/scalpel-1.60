@@ -5,7 +5,7 @@
 // modify it under the terms of the GNU General Public License as
 // published by the Free Software Foundation; either version 2 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -65,7 +65,7 @@
 #include <sys/ioctl.h>
 #include <libgen.h>
 // off_t on Mac OS X is 64 bits
-#define off64_t  off_t      
+#define off64_t  off_t
 #endif  /* ifdef __OPENBSD */
 
 #ifdef __LINUX
@@ -109,7 +109,7 @@ void setProgramName(char *s);
 
 #ifndef __WIN32
 #include <sys/mount.h>
-#endif 
+#endif
 
 
 #define TRUE   1
@@ -170,7 +170,7 @@ void setProgramName(char *s);
 // GLOBALS
 
 // signal has been caught by signal handler
-extern int signal_caught; 
+extern int signal_caught;
 
 // current wildcard character
 extern char wildcard;
@@ -211,7 +211,7 @@ extern int  errno;
 // byte, the last write operation occurs, the file is closed, and the
 // struct can be reused.
 
-// *****GGRIII: use of priority field to store these flags and the 
+// *****GGRIII: use of priority field to store these flags and the
 // data structures which track CarveInfo structs needs to be better
 // documented
 
@@ -263,7 +263,7 @@ typedef struct SearchSpecOffsets {
 typedef struct SearchSpecLine {
   char *suffix;
   int casesensitive;
-  unsigned long long length;     
+  unsigned long long length;
   char *begin;
   int beginlength;
   size_t begin_bm_table[UCHAR_MAX+1];
@@ -273,14 +273,14 @@ typedef struct SearchSpecLine {
   int searchtype; // FORWARD, NEXT, REVERSE search type for footer
   struct SearchSpecOffsets offsets;
   unsigned long long numfilestocarve;      // # files to carve of this type
-  unsigned long organizeDirNum;            // subdirectory # for organization 
+  unsigned long organizeDirNum;            // subdirectory # for organization
                                            // of files of this type
 } SearchSpecLine;
 
 
 typedef struct scalpelState {
-  char *imagefile; 
-  char *conffile; 
+  char *imagefile;
+  char *conffile;
   char *outputdirectory;
   int specLines;
   struct SearchSpecLine* SearchSpec;
@@ -296,7 +296,7 @@ typedef struct scalpelState {
   unsigned char *coveragebitmap;
   unsigned long long coveragenumblocks;
   int useInputFileList;
-  char *inputFileList; 
+  char *inputFileList;
   int carveWithMissingFooters;
   int noSearchOverlap;
   int ignoreEmbedded;
@@ -320,22 +320,22 @@ typedef struct Fragment {
   unsigned long long stop;
 } Fragment;
 
-  
+
 // prototypes for visible dig.c functions
 int digImageFile(struct scalpelState *state);
 int carveImageFile(struct scalpelState *state);
 
 
 // prototypes for visible helpers.c functions
-void checkMemoryAllocation(struct scalpelState *state, void *ptr, int line, 
+void checkMemoryAllocation(struct scalpelState *state, void *ptr, int line,
 			   char *file, char *structure);
 int skipInFile(struct scalpelState *state, FILE *infile);
 void scalpelLog(struct scalpelState *state, char *format, ...);
 void handleError(struct scalpelState *s, int error);
-int memwildcardcmp(const void* s1, const void* s2, 
+int memwildcardcmp(const void* s1, const void* s2,
 		   size_t n, int caseSensitive);
 
-void init_bm_table(char *needle, size_t table[UCHAR_MAX + 1], 
+void init_bm_table(char *needle, size_t table[UCHAR_MAX + 1],
 		   size_t len, int casesensitive);
 int findLongestNeedle(struct SearchSpecLine* SearchSpec);
 
@@ -344,7 +344,7 @@ char *bm_needleinhaystack(char *needle, size_t needle_len,
                           size_t table[UCHAR_MAX + 1], int casesensitive);
 int translate(char *str);
 char *skipWhiteSpace(char *str);
-void setttywidth();
+void setttywidth(int signum);
 
 // prototypes for visible files.c functions
 unsigned long long measureOpenFile(FILE *f, struct scalpelState *state);
@@ -360,4 +360,3 @@ extern char *strsignal(int sig);
 #endif  /*  ifdef __WIN32 */
 
 #endif   /* ifndef SCALPEL_H */
-

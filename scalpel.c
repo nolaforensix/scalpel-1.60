@@ -5,7 +5,7 @@
 // modify it under the terms of the GNU General Public License as
 // published by the Free Software Foundation; either version 2 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -22,7 +22,7 @@
 //
 // Thanks to Kris Kendall, Jesse Kornblum, et al for their work on
 // foremost.  Additional thanks to Vassil Roussev and Vico Marziale, of the
-// Department of Computer Science at the University of New Orleans, for 
+// Department of Computer Science at the University of New Orleans, for
 // ongoing support of Scalpel.
 //
 // Scalpel currently uses the SAME configuration file format as
@@ -33,17 +33,17 @@
 #include "scalpel.h"
 
 // GLOBALS
-int signal_caught; 
+int signal_caught;
 char wildcard;
 int ttywidth;
 char *__progname;
 
 void usage() {
-  
+
   printf("Carves files from a disk image based on file headers and footers.\n");
   printf("\nUsage: scalpel [-b] [-c <config file>] [-d] [-h|V] [-i <file>]\n");
   printf("                 [-m blocksize] [-n] [-o <outputdir>] [-O num] [-q clustersize]\n");
-  printf("                 [-r] [-s num] [-t <blockmap file>] [-u] [-v]\n"); 
+  printf("                 [-r] [-s num] [-t <blockmap file>] [-u] [-v]\n");
   printf("                 <imgfile> [<imgfile>] ...\n\n");
   printf("-b  Carve files even if defined footers aren't discovered within\n");
   printf("    maximum carve size for file type [foremost 0.69 compat mode].\n");
@@ -65,7 +65,7 @@ void usage() {
   printf("    into subdirectories.\n");
   printf("-p  Perform image file preview; audit log indicates which files\n");
   printf("    would have been carved, but no files are actually carved.\n");
-  printf("-q  Carve only when header is cluster-aligned.\n"); 
+  printf("-q  Carve only when header is cluster-aligned.\n");
   printf("-r  Find only first of overlapping headers/footers [foremost 0.69 compat mode].\n");
   printf("-s  Skip n bytes in each disk image before carving.\n");
   printf("-t  Set directory for coverage blockmap.  **EXPERIMENTAL**\n");
@@ -104,8 +104,8 @@ int extractSearchSpecData(struct SearchSpecLine *s,char **tokenarray) {
 
   s->suffix = malloc(MAX_SUFFIX_LENGTH*sizeof(char));
   s->begin  = malloc(MAX_STRING_LENGTH*sizeof(char));
-  s->end    = malloc(MAX_STRING_LENGTH*sizeof(char));    
-  
+  s->end    = malloc(MAX_STRING_LENGTH*sizeof(char));
+
   if (!strncasecmp(tokenarray[0],
                    SCALPEL_NOEXTENSION_SUFFIX,
                    strlen(SCALPEL_NOEXTENSION_SUFFIX))) {
@@ -115,11 +115,11 @@ int extractSearchSpecData(struct SearchSpecLine *s,char **tokenarray) {
   else {
     memcpy(s->suffix,tokenarray[0],MAX_SUFFIX_LENGTH);
   }
-  
+
   // case sensitivity check
-  s->casesensitive = (!strncasecmp(tokenarray[1],"y",1) || 
+  s->casesensitive = (!strncasecmp(tokenarray[1],"y",1) ||
 		      !strncasecmp(tokenarray[1],"yes",3));
-  
+
   //#ifdef __WIN32
   //    s->length = _atoi64(tokenarray[2]);
   //#else
@@ -144,9 +144,9 @@ int extractSearchSpecData(struct SearchSpecLine *s,char **tokenarray) {
   s->beginlength = translate(tokenarray[3]);
   memcpy(s->begin,tokenarray[3],s->beginlength);
   s->endlength = translate(tokenarray[4]);
-  memcpy(s->end,tokenarray[4],s->endlength);  
- 
-  init_bm_table(s->begin,s->begin_bm_table,s->beginlength, 
+  memcpy(s->end,tokenarray[4],s->endlength);
+
+  init_bm_table(s->begin,s->begin_bm_table,s->beginlength,
 		s->casesensitive);
   init_bm_table(s->end,s->end_bm_table,s->endlength,
 		s->casesensitive);
@@ -154,16 +154,16 @@ int extractSearchSpecData(struct SearchSpecLine *s,char **tokenarray) {
 }
 
 
-int processSearchSpecLine(struct scalpelState *state, char *buffer, 
+int processSearchSpecLine(struct scalpelState *state, char *buffer,
 			  int lineNumber) {
-  
+
   char *buf = buffer;
   char *token;
   char **tokenarray = (char **) malloc(6*sizeof(char[MAX_STRING_LENGTH+1]));
   int i = 0, err = 0, len = strlen(buffer);
 
   // murder CTRL-M (0x0d) characters that terminate a line
-  if (len >= 2 && buffer[len-2] == 0x0d && buffer[len-1] == 0x0a) {  
+  if (len >= 2 && buffer[len-2] == 0x0d && buffer[len-1] == 0x0a) {
     buffer[len-2] = buffer[len-1];
     buffer[len-1] = buffer[len];
   }
@@ -172,15 +172,15 @@ int processSearchSpecLine(struct scalpelState *state, char *buffer,
   token = strtok(buf," \t\n");
 
   // lines beginning with # are comments
-  if(token == NULL || token[0] == '#'){  
+  if(token == NULL || token[0] == '#'){
     return SCALPEL_OK;
   }
-    
+
   // allow wildcard to be changed
   if (!strncasecmp(token,"wildcard",9)) {
     if ((token = strtok(NULL," \t\n")) != NULL) {
       translate(token);
-    } 
+    }
     else {
       fprintf (stdout,"Warning: Empty wildcard in configuration file line %d. Ignoring.\n",
 	       lineNumber);
@@ -197,13 +197,13 @@ int processSearchSpecLine(struct scalpelState *state, char *buffer,
     wildcard = token[0];
     return SCALPEL_OK;
   }
-    
+
   while (token && (i < NUM_SEARCH_SPEC_ELEMENTS)){
     tokenarray[i] = token;
     i++;
     token = strtok(NULL," \t\n");
   }
-  
+
   switch(NUM_SEARCH_SPEC_ELEMENTS-i){
     case 2:
       tokenarray[NUM_SEARCH_SPEC_ELEMENTS-1] = "";
@@ -215,13 +215,13 @@ int processSearchSpecLine(struct scalpelState *state, char *buffer,
     case 0:
       break;
     default:
-      fprintf(stderr, 
+      fprintf(stderr,
 	      "\nERROR: In line %d of the configuration file, expected %d tokens,\n"
-	      "       but instead found only %d.\n", 
+	      "       but instead found only %d.\n",
 	      lineNumber,NUM_SEARCH_SPEC_ELEMENTS,i);
       return SCALPEL_ERROR_NO_SEARCH_SPEC;
       break;
-      
+
   }
 
   if ((err = extractSearchSpecData(&(state->SearchSpec[state->specLines]),
@@ -233,7 +233,7 @@ int processSearchSpecLine(struct scalpelState *state, char *buffer,
 	      ,lineNumber);
     }
   }
-  state->specLines++; 
+  state->specLines++;
   return SCALPEL_OK;
 }
 
@@ -243,13 +243,13 @@ int readSearchSpecFile(struct scalpelState *state) {
 
   int lineNumber = 0, status;
   FILE *f;
-  
+
   char *buffer = malloc((NUM_SEARCH_SPEC_ELEMENTS * MAX_STRING_LENGTH + 1) * sizeof(char));
 
-  f = fopen(state->conffile,"r");  
+  f = fopen(state->conffile,"r");
   if (f == NULL) {
     fprintf (stderr,
-	     "ERROR: Couldn't open configuration file: %s -- %s\n", 
+	     "ERROR: Couldn't open configuration file: %s -- %s\n",
 	     state->conffile,strerror(errno));
     free(buffer);
     return SCALPEL_ERROR_FILE_OPEN;
@@ -285,14 +285,14 @@ int readSearchSpecFile(struct scalpelState *state) {
 
   // GGRIII: offsets field is uninitialized--it doesn't
   // matter, since we won't use this entry.
-  
+
   fclose(f);
   free(buffer);
   return SCALPEL_OK;
 }
 
 // Register the signal-handler that will write to the audit file and
-// close it if we catch a SIGINT or SIGTERM 
+// close it if we catch a SIGINT or SIGTERM
 void registerSignalHandlers() {
   if (signal (SIGINT, catch_alarm) == SIG_IGN) {
       signal (SIGINT, SIG_IGN);
@@ -304,23 +304,23 @@ void registerSignalHandlers() {
 #ifndef __WIN32
     // *****GGRIII:  is this problematic?
     // From foremost 0.69:
-    /* Note: I haven't found a way to get notified of 
+    /* Note: I haven't found a way to get notified of
        console resize events in Win32.  Right now the statusbar
-       will be too long or too short if the user decides to resize 
+       will be too long or too short if the user decides to resize
        their console window while foremost runs.. */
 
     signal(SIGWINCH, setttywidth);
-#endif 
+#endif
 }
 
 // initialize state variable and copy command line arguments
 void initializeState(char **argv, struct scalpelState *state) {
-  
+
   char** argvcopy = argv;
   int sss;
   int i;
-  
-  // Allocate memory for the state 
+
+  // Allocate memory for the state
   state->imagefile        = (char*) malloc(MAX_STRING_LENGTH * sizeof(char));
   state->inputFileList    = (char*) malloc(MAX_STRING_LENGTH * sizeof(char));
   state->conffile         = (char*) malloc(MAX_STRING_LENGTH * sizeof(char));
@@ -362,7 +362,7 @@ void initializeState(char **argv, struct scalpelState *state) {
   state->generateHeaderFooterDatabase = FALSE;
   state->updateCoverageBlockmap = FALSE;
   state->useCoverageBlockmap = FALSE;
-  state->blockAlignedOnly = FALSE; 
+  state->blockAlignedOnly = FALSE;
   state->organizeSubdirectories = TRUE;
   state->previewMode = FALSE;
   state->ignoreEmbedded = FALSE;
@@ -378,43 +378,43 @@ void initializeState(char **argv, struct scalpelState *state) {
   wildcard = SCALPEL_DEFAULT_WILDCARD;
   signal_caught = 0;
   state->invocation[0] = 0;
-  
+
   // copy the invocation string into the state
   do {
-    strncat(state->invocation,  
-	    *argvcopy, 
+    strncat(state->invocation,
+	    *argvcopy,
 	    MAX_STRING_LENGTH-strlen(state->invocation));
     strncat(state->invocation,
 	    " ",
 	    MAX_STRING_LENGTH-strlen(state->invocation));
-    ++argvcopy;  
-  } while (*argvcopy);  
+    ++argvcopy;
+  } while (*argvcopy);
 
   registerSignalHandlers();
 }
 
 // parse command line arguments
-void processCommandLineArgs(int argc, char **argv, 
+void processCommandLineArgs(int argc, char **argv,
 			    struct scalpelState *state) {
   int i;
 
   while ((i = getopt(argc, argv, "bhvVundpq:rt:c:o:s:i:m:O")) != -1) {
     switch (i) {
-	
+
     case 'V':
       fprintf (stdout,SCALPEL_COPYRIGHT_STRING);
       exit(1);
-      
+
     case 'h':
       usage();
       exit(1);
-      
+
     case 's':
       state->skip = strtoull(optarg,NULL,10);
       fprintf (stdout,"Skipping the first %lld bytes of each image file.\n",
 	       state->skip);
       break;
-      
+
     case 'c':
       strncpy(state->conffile,optarg,MAX_STRING_LENGTH);
       break;
@@ -432,12 +432,12 @@ void processCommandLineArgs(int argc, char **argv,
       state->updateCoverageBlockmap = TRUE;
       state->coverageblocksize=strtoul(optarg,NULL,10);
       if (state->coverageblocksize <= 0) {
-	fprintf(stderr, 
+	fprintf(stderr,
 		"\nERROR: Invalid blocksize for -m command line option.\n");
 	exit(1);
       }
       break;
-      
+
     case 'o':
       strncpy(state->outputdirectory,optarg,MAX_STRING_LENGTH);
       break;
@@ -458,12 +458,12 @@ void processCommandLineArgs(int argc, char **argv,
     case 'b':
       state->carveWithMissingFooters = TRUE;
       break;
-      
+
     case 'i':
       state->useInputFileList = TRUE;
-      state->inputFileList = optarg;  
-      break;	  
-      
+      state->inputFileList = optarg;
+      break;
+
     case 'n':
       state->modeNoSuffix = TRUE;
       fprintf (stdout,"Extracting files without filename extensions.\n");
@@ -473,7 +473,7 @@ void processCommandLineArgs(int argc, char **argv,
       state->blockAlignedOnly = TRUE;
       state->alignedblocksize = strtoul(optarg,NULL,10);
       if (state->alignedblocksize <= 0) {
-	fprintf(stderr, 
+	fprintf(stderr,
 		"\nERROR: Invalid blocksize for -q command line option.\n");
 	exit(1);
       }
@@ -500,7 +500,7 @@ void processCommandLineArgs(int argc, char **argv,
 // full pathnames for all files used
 void convertFileNames(struct scalpelState *state) {
 
-  char fn[MAX_STRING_LENGTH];  
+  char fn[MAX_STRING_LENGTH];
 
   realpath(state->outputdirectory,fn);
   strncpy(state->outputdirectory,fn,MAX_STRING_LENGTH);
@@ -516,7 +516,7 @@ void convertFileNames(struct scalpelState *state) {
 
 void digAllFiles(int argc, char **argv, struct scalpelState *state) {
 
-  int i = 0, j = 0; 
+  int i = 0, j = 0;
   FILE* listoffiles = NULL;
 
   if (state->useInputFileList) {
@@ -524,7 +524,7 @@ void digAllFiles(int argc, char **argv, struct scalpelState *state) {
 	    state->inputFileList);
     listoffiles = fopen(state->inputFileList,"r");
     if (listoffiles == NULL) {
-      fprintf(stderr, "Couldn't open file: %s -- %s\n", 
+      fprintf(stderr, "Couldn't open file: %s -- %s\n",
 	      (*(state->inputFileList) == '\0')?"<blank>":state->inputFileList,
 	      strerror(errno));
       closeFile(state->auditFile);
@@ -533,11 +533,11 @@ void digAllFiles(int argc, char **argv, struct scalpelState *state) {
     j = 0;
     do {
       j++;
-      
+
       if (fgets(state->imagefile,MAX_STRING_LENGTH,listoffiles) == NULL) {
-	
+
 	fprintf(stderr,
-		"Error reading line %d of %s. Skipping line.\n", 
+		"Error reading line %d of %s. Skipping line.\n",
 		j,state->inputFileList);
 	continue;
       }
@@ -547,7 +547,7 @@ void digAllFiles(int argc, char **argv, struct scalpelState *state) {
 
       // GGRIII: this function now *only* builds the header/footer
       // database.  Carving is handled afterward, in carveImageFile().
-      
+
       if ((i = digImageFile(state))) {
 	handleError(state,i);
       }
@@ -555,35 +555,35 @@ void digAllFiles(int argc, char **argv, struct scalpelState *state) {
 	// GGRIII: "digging" is now complete and header/footer database
 	// has been built.  The function carveImageFile() performs
 	// extraction of files based on this database.
-      
+
 	if ((i = carveImageFile(state))) {
 	  handleError(state,i);
-	}		
+	}
       }
-    } 
+    }
     while (!feof(listoffiles));
     closeFile(listoffiles);
   }
   else {
     do {
       state->imagefile = *argv;
-      
+
       // GGRIII: this function now *only* builds the header/footer
       // database.  Carving is handled afterward, in carveImageFile().
 
       if ((i = digImageFile(state))) {
 	handleError(state,i);
-      }		
+      }
       else {
 	// GGRIII: "digging" is now complete and header/footer database
-	// has been built.  The function carveImageFile() performs extraction 
+	// has been built.  The function carveImageFile() performs extraction
 	// of files based on this database.
-	
+
 	if ((i = carveImageFile(state))) {
 	  handleError(state,i);
-	}		
+	}
       }
-      ++argv;  
+      ++argv;
     } while (*argv);
   }
 }
@@ -598,7 +598,7 @@ int main(int argc, char **argv) {
     fprintf (stderr, SCALPEL_SIZEOFBUFFER_PANIC_STRING);
     exit (-1);
   }
-  
+
 #ifndef __GLIBC__
   setProgramName(argv[0]);
 #endif
@@ -623,7 +623,7 @@ int main(int argc, char **argv) {
     exit(-1);
   }
 
-  setttywidth();
+  setttywidth(0);
 
   argv += optind;
   if (*argv != NULL || state.useInputFileList) {
@@ -634,18 +634,18 @@ int main(int argc, char **argv) {
     }
     digAllFiles(argc,argv,&state);
     closeFile(state.auditFile);
-  } else {      
+  } else {
     usage();
     fprintf(stdout,"\nERROR: No image files specified.\n\n");
   }
 
 #ifdef __WIN32
-  fprintf (stdout,"\nScalpel is done, files carved = %I64u, elapsed = %ld seconds.\n", 
-	   state.fileswritten, 
+  fprintf (stdout,"\nScalpel is done, files carved = %I64u, elapsed = %ld seconds.\n",
+	   state.fileswritten,
 	   (int)time(0) - starttime);
 #else
-  fprintf (stdout,"\nScalpel is done, files carved = %llu, elapsed = %ld seconds.\n", 
-	   state.fileswritten, 
+  fprintf (stdout,"\nScalpel is done, files carved = %llu, elapsed = %ld seconds.\n",
+	   state.fileswritten,
 	   (int)time(0) - starttime);
 #endif
 

@@ -5,7 +5,7 @@
 // modify it under the terms of the GNU General Public License as
 // published by the Free Software Foundation; either version 2 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -27,7 +27,7 @@
 #include "scalpel.h"
 
 
-void checkMemoryAllocation(struct scalpelState *state, void *ptr, int line, 
+void checkMemoryAllocation(struct scalpelState *state, void *ptr, int line,
 			   char *file, char *structure) {
   if (ptr) {
     return;
@@ -37,15 +37,15 @@ void checkMemoryAllocation(struct scalpelState *state, void *ptr, int line,
     fprintf (stderr,
 	     "ERROR: Memory exhausted at line %d in file %s. Scalpel was \n",
   	     line, file);
-    fprintf(stderr, 
-	    "allocating memory for %s when this condition occurred.\n", 
+    fprintf(stderr,
+	    "allocating memory for %s when this condition occurred.\n",
 	    structure);
 
     fprintf (state->auditFile,
 	     "ERROR: Memory exhausted at line %d in file %s. Scalpel was \n",
   	     line, file);
-    fprintf(state->auditFile, 
-	    "allocating memory for %s when this condition occurred.\n", 
+    fprintf(state->auditFile,
+	    "allocating memory for %s when this condition occurred.\n",
 	    structure);
 
     handleError(state, SCALPEL_GENERAL_ABORT);  // fatal
@@ -67,7 +67,7 @@ void setProgramName(char *s) {
 #endif /* ifndef __GLIBC__ */
 
 
-// write entry to both the screen and the audit file 
+// write entry to both the screen and the audit file
 void scalpelLog(struct scalpelState *state, char *format, ...) {
 
   va_list argp;
@@ -75,14 +75,14 @@ void scalpelLog(struct scalpelState *state, char *format, ...) {
   va_start(argp,format);
   vfprintf(stderr,format,argp);
   va_end(argp);
-  
+
   va_start(argp,format);
-  vfprintf(state->auditFile,format,argp); 
+  vfprintf(state->auditFile,format,argp);
   va_end(argp);
 
 }
 
-// determine if two characters match, with optional case 
+// determine if two characters match, with optional case
 // insensitivity.  If a is the Scalpel wildcard character,
 // then a and b will always match.
 int charactersMatch(char a, char b, int caseSensitive) {
@@ -101,9 +101,9 @@ int charactersMatch(char a, char b, int caseSensitive) {
 
 // memwildcardcmp is a memcmp() clone, except that single
 // character wildcards are supported.  The default wildcard character is '?',
-// but this can be redefined in the configuration file.  A wildcard in s1 will 
-// match any single character in s2.  
-int memwildcardcmp(const void *s1, const void *s2, 
+// but this can be redefined in the configuration file.  A wildcard in s1 will
+// match any single character in s2.
+int memwildcardcmp(const void *s1, const void *s2,
 		   size_t n,int caseSensitive){
   if (n != 0) {
     register const unsigned char *p1 = s1, *p2 = s2;
@@ -117,14 +117,14 @@ int memwildcardcmp(const void *s1, const void *s2,
 }
 
 // initialize Boyer-Moore "jump table" for search. Dependence
-// on search type (e.g., FORWARD, REVERSE, etc.) from Foremost 
+// on search type (e.g., FORWARD, REVERSE, etc.) from Foremost
 // has been removed, because Scalpel always performs searches across
 // a buffer in a forward direction.
-void init_bm_table(char *needle, size_t table[UCHAR_MAX + 1], 
+void init_bm_table(char *needle, size_t table[UCHAR_MAX + 1],
 		   size_t len, int casesensitive) {
 
   size_t i = 0,j = 0,currentindex = 0;
-  
+
   for (i = 0; i <= UCHAR_MAX; i++) {
     table[i] = len;
   }
@@ -132,37 +132,37 @@ void init_bm_table(char *needle, size_t table[UCHAR_MAX + 1],
   for (i = 0; i < len; i++) {
     currentindex = len-i-1; //Count from the back of string
     //No skip entry can advance us past the last wildcard in the string
-    if (needle[i] == wildcard) {           
+    if (needle[i] == wildcard) {
       for (j=0; j<= UCHAR_MAX; j++) {
-	table[j] = currentindex; 
+	table[j] = currentindex;
       }
-    }	
+    }
     table[(unsigned char)needle[i]] = currentindex;
     if (! casesensitive && needle[i] > 0) {
       table[tolower(needle[i])] = currentindex;
       table[toupper(needle[i])] = currentindex;
     }
-  }	  
+  }
 }
 
 // Perform a modified Boyer-Moore string search, supporting wildcards,
 // case-insensitive searches, and specifiable start locations in the buffer.
-// Dependence on search type (e.g., FORWARD, REVERSe, etc.) from Foremost has 
+// Dependence on search type (e.g., FORWARD, REVERSe, etc.) from Foremost has
 // been removed, because Scalpel always performs forward searching.
 
 char *bm_needleinhaystack_skipnchars(char *needle, size_t needle_len,
 				     char *haystack, size_t haystack_len,
-				     size_t table[UCHAR_MAX + 1], 
+				     size_t table[UCHAR_MAX + 1],
 				     int casesensitive,
 				     int start_pos) {
   register size_t shift = 0;
   register size_t pos = start_pos;
-  char *here; 
-  
+  char *here;
+
   if(needle_len == 0) {
     return haystack;
   }
-  
+
   while (pos < haystack_len){
     while( pos < haystack_len && (shift = table[(unsigned char)haystack[pos]]) > 0) {
       pos += shift;
@@ -184,12 +184,12 @@ char *bm_needleinhaystack(char *needle, size_t needle_len,
                           char *haystack, size_t haystack_len,
                           size_t table[UCHAR_MAX + 1], int casesensitive) {
 
-  return bm_needleinhaystack_skipnchars(needle, 
-					needle_len, 
-					haystack, 
-					haystack_len, 
-					table, 
-					casesensitive, 
+  return bm_needleinhaystack_skipnchars(needle,
+					needle_len,
+					haystack,
+					haystack_len,
+					table,
+					casesensitive,
 					needle_len - 1);
 }
 
@@ -206,8 +206,8 @@ int findLongestNeedle(struct SearchSpecLine *SearchSpec) {
       longest = SearchSpec[i].endlength;
     }
   }
-  return longest;  
-}     
+  return longest;
+}
 
 
 // decode strings with embedded escape sequences and return the total length of the
@@ -218,11 +218,11 @@ int translate(char *str) {
   char *rd = str,*wr = str,*bad;
   char temp[1+3+1];
   char ch;
-  
+
   if (!*rd) {  //If it's a null string just return
     return 0;
   }
-  
+
   while (*rd) {
     // Is it an escaped character?
     if (*rd == '\\') {
@@ -235,18 +235,18 @@ int translate(char *str) {
       case 'r':  rd++;*(wr++)='\r'; break;
       case 't':  rd++;*(wr++)='\t'; break;
       case 'v':  rd++;*(wr++)='\v'; break;
-	// Hexadecimal/Octal values are treated in one place using strtoul() 
+	// Hexadecimal/Octal values are treated in one place using strtoul()
       case 'x':
       case '0': case '1': case '2': case '3':
-	next = *(rd+1); 
-	if (next < 48 || (57 < next && next < 65) || 
-	    (70 < next && next < 97) || next > 102) 
-	  break;  //break if not a digit or a-f, A-F 
-	next = *(rd+2); 
-	if (next < 48 || (57 < next && next < 65) || 
-	    (70 < next && next < 97) || next > 102) 
-	  break;  //break if not a digit or a-f, A-F 
-	
+	next = *(rd+1);
+	if (next < 48 || (57 < next && next < 65) ||
+	    (70 < next && next < 97) || next > 102)
+	  break;  //break if not a digit or a-f, A-F
+	next = *(rd+2);
+	if (next < 48 || (57 < next && next < 65) ||
+	    (70 < next && next < 97) || next > 102)
+	  break;  //break if not a digit or a-f, A-F
+
 	temp[0] = '0'; bad = temp;
 	strncpy(temp+1,rd,3);
 	temp[4] = '\0';
@@ -254,7 +254,7 @@ int translate(char *str) {
 	if (*bad =='\0') {
 	  *(wr++) = ch;
 	  rd+=3;
-	} // else INVALID CHARACTER IN INPUT ('\\' followed by *rd) 
+	} // else INVALID CHARACTER IN INPUT ('\\' followed by *rd)
 	break;
       default: // INVALID CHARACTER IN INPUT (*rd)
 	*(wr++)='\\';
@@ -281,9 +281,9 @@ char *skipWhiteSpace(char* str) {
 // describe Scalpel error conditions.  Some errors are fatal, while
 // others are advisory.
 void handleError(struct scalpelState *state, int error) {
-  
+
   switch(error) {
-    
+
   case SCALPEL_ERROR_FILE_OPEN:
     // non-fatal
     scalpelLog(state,"Scalpel was unable to open the image file: %s\n"
@@ -329,7 +329,7 @@ void handleError(struct scalpelState *state, int error) {
     closeFile(state->auditFile);
     exit (-1);
     break;
-  
+
   default:
     // fatal
     scalpelLog(state,
@@ -341,9 +341,9 @@ void handleError(struct scalpelState *state, int error) {
 }
 
 
-void setttywidth(){
+void setttywidth(int signum){
 #if defined (__WIN32)
-  CONSOLE_SCREEN_BUFFER_INFO csbi;  
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
   HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
   if(! GetConsoleScreenBufferInfo(hConsole, &csbi)){
     ttywidth = 80;
@@ -360,7 +360,7 @@ void setttywidth(){
   }
   else {
     // 80 is a reasonable default
-    ttywidth = 80; 
+    ttywidth = 80;
   }
   //#endif
 #endif
@@ -373,7 +373,7 @@ int skipInFile(struct scalpelState *state, FILE *infile) {
   while(TRUE) {
     if ((fseeko(infile,state->skip,SEEK_SET))) {
 
-#ifdef __WIN32      
+#ifdef __WIN32
       fprintf(stderr,
 	      "ERROR: Couldn't skip %I64u bytes at the start of image file %s\n",
 	      state->skip,state->imagefile);
@@ -382,11 +382,11 @@ int skipInFile(struct scalpelState *state, FILE *infile) {
 	      "ERROR: Couldn't skip %lld bytes at the start of image file %s\n",
 	      state->skip,state->imagefile);
 #endif
-	
+
       if (retries++ > 3) {
 	fprintf(stderr,"Sorry, maximum retries exceeded...\n");
 	return FALSE;
-      } 
+      }
       else {
 	fprintf (stderr,"Waiting to try again... \n");
 	sleep(3);
