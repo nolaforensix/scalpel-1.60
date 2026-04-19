@@ -127,6 +127,21 @@ int closeFile(FILE* f) {
 }
 
 
+// helper function for measureOpenFile(), based on e2fsprogs utility
+// function valid_offset()
+
+#if !defined(__LINUX)
+ static int valid_offset(int fd, off64_t offset) {
+     char ch;
+     if (lseek(fd, offset, SEEK_SET) < 0) {
+       return 0;
+     }
+     if (read(fd, &ch, 1) < 1) {
+       return 0;
+     }
+     return 1;
+ }
+#endif
 
 
 // Return the remaining size, in bytes, of an open file stream. On
